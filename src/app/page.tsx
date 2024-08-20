@@ -1,7 +1,9 @@
 "use client"
+import { useState } from "react";
+import { useAppSelector , useAppDispatch } from "../lib/hooks";
 import { generateSolanaKeypairAndSignMessage } from "./(scripts)/keypair";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
-import { useState } from "react";
+import { increment , decrement , incrementByAmount } from "@/lib/features/counter/counterSlice";
 
 export default function Home() {
 
@@ -9,6 +11,7 @@ export default function Home() {
   const [secretKey, setSecretKey] = useState("");
   const [isValid, setIsValid] = useState(false);
   const [mnemonicArray, setMnemonicArray] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
 
   let callbackify = () => {
     let { publicKey, secretKey, isValid } = generateSolanaKeypairAndSignMessage("hello world");
@@ -24,6 +27,8 @@ export default function Home() {
     
     setMnemonicArray(mnemonicWords);
   }
+
+  const counter = useAppSelector(state => state.counter.value);
 
   return (
     <>
@@ -49,6 +54,10 @@ export default function Home() {
           </li>
         ))}
       </ul>
+      
+      <button onClick={() => { dispatch(increment()) }}>Increment</button>
+      <button onClick={() => { dispatch(decrement()) }}>Decrement</button>
+      <p>{counter}</p>
     </>
   );
 }
