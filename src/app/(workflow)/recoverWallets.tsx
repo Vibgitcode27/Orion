@@ -21,12 +21,12 @@ export default function RecoverWallets() {
     // Derive multiple wallets (let's say we recover the first 5)
     for (let i = 0; i < 5; i++) {
       // BIP-44 path for Solana: m/44'/501'/{account}'/0'
-      const solanaPath = `m/44'/501'/0'`;
+      const solanaPath = `m/44'/501'/${i}'/0'`;
       const solanaChild = root.derivePath(solanaPath);
       const solanaKeypair = Keypair.fromSeed(solanaChild.privateKey.slice(0, 32));
 
       // BIP-44 path for Ethereum: m/44'/60'/0'/0/{index}
-      const ethPath = `m/44'/60'/1'/0/0`;
+      const ethPath = `m/44'/501'/${i}'`;
       const ethChild = root.derivePath(ethPath);
       const ethPublicKey = ethers.hexlify(ethChild.publicKey).slice(2);
       const ethSecretKey = ethers.hexlify(ethChild.privateKey);
