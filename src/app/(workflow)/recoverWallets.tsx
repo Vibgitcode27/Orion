@@ -5,12 +5,14 @@ import { Row, Col, Input, Button } from "antd";
 import { BIP32Factory } from "bip32";
 import ecc from '@bitcoinerlab/secp256k1';
 import { ethers } from 'ethers';
+import { derivePath } from "ed25519-hd-key";
 
 export default function RecoverWallets() {
-  const [mnemonic, setMnemonic] = useState<string>("");
-  const [wallets, setWallets] = useState<{ solanaPublicKey: string; solanaSecretKey: string; ethereumPublicKey: string; ethereumSecretKey: string }[]>([]);
+  const [mnemonic, setMnemonic] = useState("");
+  const [wallets, setWallets] = useState<{ solanaPublicKey: string; solanaSecretKey: string; ethereumAddress: string; ethereumPrivateKey: string }[]>([]);
 
   const bip32 = BIP32Factory(ecc);
+
   const recoverWallets = () => {
     if (!mnemonic) return;
 
@@ -20,22 +22,22 @@ export default function RecoverWallets() {
 
     // Derive multiple wallets (let's say we recover the first 5)
     for (let i = 0; i < 5; i++) {
-      // BIP-44 path for Solana: m/44'/501'/{account}'/0'
+      // Solana wallet derivation
       const solanaPath = `m/44'/501'/${i}'/0'`;
-      const solanaChild = root.derivePath(solanaPath);
-      const solanaKeypair = Keypair.fromSeed(solanaChild.privateKey.slice(0, 32));
+      const { key: solanaPrivateKey } = derivePath(solanaPath, seed.toString('hex'));
+      const solanaKeypair = Keypair.fromSeed(Uint8Array.from(solanaPrivateKey));
 
-      // BIP-44 path for Ethereum: m/44'/60'/0'/0/{index}
-      const ethPath = `m/44'/501'/${i}'`;
+      // Ethereum wallet derivation
+      const ethPath = `m/44'/60'/0'/0/${i}`;
       const ethChild = root.derivePath(ethPath);
-      const ethPublicKey = ethers.hexlify(ethChild.publicKey).slice(2);
-      const ethSecretKey = ethers.hexlify(ethChild.privateKey);
+      const ethPrivateKey = ethers.hexlify(ethChild.privateKey);
+      const ethWallet = new ethers.Wallet(ethPrivateKey);
 
       recoveredWallets.push({
         solanaPublicKey: solanaKeypair.publicKey.toBase58(),
         solanaSecretKey: Buffer.from(solanaKeypair.secretKey).toString("hex"),
-        ethereumPublicKey: ethPublicKey,
-        ethereumSecretKey: ethSecretKey,
+        ethereumAddress: ethWallet.address,
+        ethereumPrivateKey: ethPrivateKey,
       });
     }
 
@@ -44,25 +46,29 @@ export default function RecoverWallets() {
 
   return (
     <>
-      <h2>Recover Wallets</h2>
-      <Input
-        placeholder="Enter your seed phrase (mnemonic)"
-        value={mnemonic}
-        onChange={(e) => setMnemonic(e.target.value)}
-      />
-      <Button onClick={recoverWallets} type="primary">
-        Recover Wallets
-      </Button>
-
+      <h1>Recover Wallets</h1>
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <Input
+            placeholder="Enter your mnemonic phrase"
+            onChange={(e) => setMnemonic(e.target.value)}
+          />
+        </Col>
+        <Col span={24}>
+          <Button onClick={recoverWallets}>
+            Recover Wallets
+          </Button>
+        </Col>
+      </Row>
       {wallets.length > 0 && (
         <Row gutter={[16, 16]}>
           {wallets.map((wallet, index) => (
-            <Col key={index} span={24}>
-              <h3>Wallet {index + 1}</h3>
+            <Col span={24} key={index}>
+              <h2>Wallet {index + 1}</h2>
               <p><strong>Solana Public Key:</strong> {wallet.solanaPublicKey}</p>
               <p><strong>Solana Secret Key (Hex):</strong> {wallet.solanaSecretKey}</p>
-              <p><strong>Ethereum Public Key:</strong> {wallet.ethereumPublicKey}</p>
-              <p><strong>Ethereum Secret Key (Hex):</strong> {wallet.ethereumSecretKey}</p>
+              <p><strong>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
+              <p><strong>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p>
             </Col>
           ))}
         </Row>
