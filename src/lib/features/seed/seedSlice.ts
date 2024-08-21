@@ -1,24 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface seedState {
-  value: string;
+  value: Buffer;
 }
 
 const initialState: seedState = {
-  value: "",
+  value: Buffer.alloc(0),
 };
 
 export const seedSlice = createSlice({
   name: "seed",
   initialState,
   reducers: {
-    getSeed: (state) => {
-      state.value += 1;
+    setSeed: (state, action) => {
+      state.value = action.payload;
     },
   },
 });
 
-export const { getSeed } = seedSlice.actions;
+export const { setSeed } = seedSlice.actions;
 
 export default seedSlice.reducer;

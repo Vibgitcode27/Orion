@@ -1,7 +1,7 @@
 "use client";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { useState } from "react";
-import { Keypair } from "@solana/web3.js"; // Import Solana Keypair
+import { Keypair } from "@solana/web3.js";
 
 export default function Home() {
   const [mnemonicArray, setMnemonicArray] = useState<string[]>([]);
