@@ -1,0 +1,17 @@
+body{
+    background-color: black;
+}
+
+/* // NavBar */
+.logo{
+    color : rgb(233, 65, 255)
+}
+
+.nav-btn{
+    background-color: black;
+    background-color: black;
+    border: 1px solid white;
+    color : white;
+    height: 40px;
+    border-radius: 30px;
+}

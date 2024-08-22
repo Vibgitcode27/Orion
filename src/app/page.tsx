@@ -1,11 +1,14 @@
 "use client"
 import { useState } from "react";
+import "./styles/home.css"
 import { useAppSelector , useAppDispatch } from "../lib/hooks";
 import { generateSolanaKeypairAndSignMessage } from "./(scripts)/keypair";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Button, Flex, Pagination } from "antd";
 import GenSeed from "./(workflow)/genSeed";
 import RecoverWallets from "./(workflow)/recoverWallets";
+import Navbar from "./Component/Navbar";
+import { BackgroundBeams } from "./Component/hero";
 
 export default function Home() {
 
@@ -34,38 +37,9 @@ export default function Home() {
     setMnemonicArray(mnemonicWords);
   }
 
-  const counter = useAppSelector(state => state.counter.value);
-
   return (
     <>
-      {/* <button onClick={()=> {
-        callbackify();
-      }}>Sign a message</button>
-
-      <h2>Public Key:</h2>
-      <p>{publicKey}</p>
-      <h2>Secret Key</h2>
-      <p>{secretKey}</p>
-      <h2>Is Valid:</h2>
-      <p>{isValid.toString()}</p>    
-
-      <button onClick={()=> {
-        genMnemonic();
-      }}>Generate Mnemonic</button>
-      <h2>Seed</h2>
-      <ul>
-        {mnemonicArray.map((word, index) => (
-          <li key={index}>
-            {index + 1}. {word}
-          </li>
-        ))}
-      </ul>
-      
-      <button onClick={() => { dispatch(increment()) }}>Increment</button>
-      <button onClick={() => { dispatch(decrement()) }}>Decrement</button>
-      <p>{counter}</p> */}
-
-      <Flex justify="center" align="center">
+      {/* <Flex justify="center" align="center">
         {pagination !== 0 && <Button onClick={() => { setPagination(pagination - 1)}}>Back</Button>}
       </Flex>
 
@@ -88,7 +62,9 @@ export default function Home() {
         fork === 1 && (
           <RecoverWallets/>
         )
-      }
+      } */}
+      <Navbar/>
+      <BackgroundBeams className="absolute inset-0 z-0" />
     </>
   );
 }
