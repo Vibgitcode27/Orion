@@ -8,10 +8,17 @@ body{
 }
 
 .nav-btn{
-    background-color: black;
-    background-color: black;
+    background-color: transparent;
     border: 1px solid white;
     color : white;
     height: 40px;
     border-radius: 30px;
+}
+
+.hero-btn{
+    background-color: transparent;
+        border: 1px solid white;
+        color: white;
+        height: 40px;
+        border-radius: 30px;
 }
