@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import "./styles/home.css";
-import { useAppDispatch } from "../lib/hooks";
+import { useAppDispatch, useAppSelector } from "../lib/hooks";
 import { generateSolanaKeypairAndSignMessage } from "./(scripts)/keypair";
 import { generateMnemonic } from "bip39";
 import { Button, Flex, Image, Space } from "antd";
@@ -9,8 +9,9 @@ import GenSeed from "./(workflow)/genSeed";
 import RecoverWallets from "./(workflow)/recoverWallets";
 import Navbar from "./Component/Navbar";
 import heroImg from "../app/assets/Clipped_image_20240822_061749.png";
-import { BackgroundBeams } from "./Component/hero";
+import { BackgroundBeams } from "./Component/heroBeams";
 import "./styles/home.css"
+import Page0 from "./Component/page0";
 
 export default function Home() {
   const [publicKey, setPublicKey] = useState("");
@@ -21,6 +22,8 @@ export default function Home() {
 
   const [pagination, setPagination] = useState<number>(0);
   const [fork, setFork] = useState<number>(0);
+
+  const createPage = useAppSelector(state => state.page.createPage);
 
   const callbackify = () => {
     let { publicKey, secretKey, isValid } = generateSolanaKeypairAndSignMessage("hello world");
@@ -64,49 +67,15 @@ export default function Home() {
 
       <Navbar />
       <div style={{ position: "relative", zIndex: 1 }}>
+        {/* <p style={{ color : "white"}}>{createPage}</p> */}
         <BackgroundBeams className="absolute inset-0 z-0" />
-
-        <Flex
-          justify="space-between"
-          align="center"
-          style={{
-            marginInline: "70px",
-            marginTop: "-700px", // Adjusted for better spacing
-            position: "relative",
-            zIndex: 2, // Ensures Flex stays over BackgroundBeams
-          }}
-        >
-          <Flex
-            vertical
-            style={{
-              color: "white",
-            }}
-          >
-            <h1 style={{ fontSize: "75px", margin: "0" }}>
-              Crypto <span style={{ color: "rgb(233, 65, 255)" }}>S*_*curity</span>
-            </h1>
-            <h1 style={{ fontSize: "75px", margin: "0" }}>made easy</h1>
-            <p style={{ marginTop : "20px" }}>
-              Keep your coins safe and secure with Orion Wallet and backup solutions,
-            </p>
-            <p style={{ margin: "0" }}>
-              ensuring reliable storage, management, and protection.
-            </p>
-            <Space style={{ marginTop : "40px"}}>
-              <Button  className="nav-btn" style={{ backgroundColor : "white" , color : "black" ,  fontSize : "18px" , width : "220px" , fontWeight : "bolder"}}>Create a new Wallet</Button>
-              <Button  className="nav-btn" style={{ borderColor : "orangered" , color : "orangered" , fontSize : "18px" , width : "180px"}}>Import Wallet</Button>
-            </Space>
-          </Flex>
-
-          <Image
-            src={heroImg.src}
-            style={{
-              width: "700px", // Adjust the width for responsiveness
-              height: "auto",
-              marginTop: "0px", // Adjusted to align with the text
-            }}
-          />
-        </Flex>
+        { createPage === 0 && (
+          <Page0/>
+        )}
+        { createPage === 1 && (
+          <GenSeed/>
+          // <RecoverWallets/>
+        )}
       </div>
     </>
   );

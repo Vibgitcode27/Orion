@@ -50,6 +50,7 @@ export default function RecoverWallets() {
       <Row gutter={[16, 16]}>
         <Col span={24}>
           <Input
+          style={{ color : "white"}}
             placeholder="Enter your mnemonic phrase"
             onChange={(e) => setMnemonic(e.target.value)}
           />
@@ -65,10 +66,10 @@ export default function RecoverWallets() {
           {wallets.map((wallet, index) => (
             <Col span={24} key={index}>
               <h2>Wallet {index + 1}</h2>
-              <p><strong>Solana Public Key:</strong> {wallet.solanaPublicKey}</p>
-              <p><strong>Solana Secret Key (Hex):</strong> {wallet.solanaSecretKey}</p>
-              <p><strong>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
-              <p><strong>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p>
+              <p style={{ color : "white"}}><strong>Solana Public Key:</strong> {wallet.solanaPublicKey}</p>
+              <p style={{ color : "white"}}><strong>Solana Secret Key (Hex):</strong> {wallet.solanaSecretKey}</p>
+              <p style={{ color : "white"}}><strong>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
+              <p style={{ color : "white"}}><strong>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p>
             </Col>
           ))}
         </Row>

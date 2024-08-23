@@ -4,7 +4,8 @@ body{
 
 /* // NavBar */
 .logo{
-    color : rgb(233, 65, 255)
+    color : rgb(233, 65, 255);
+    font-size: 45px;
 }
 
 .nav-btn{
@@ -17,8 +18,12 @@ body{
 
 .hero-btn{
     background-color: transparent;
-        border: 1px solid white;
-        color: white;
-        height: 40px;
-        border-radius: 30px;
+    border: 1px solid white;
+    color: white;
+    height: 40px;
+    border-radius: 30px;
+}
+
+.white{
+    color : "white" !important
 }
