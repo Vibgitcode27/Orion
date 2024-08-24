@@ -24,6 +24,7 @@ body{
     border-radius: 30px;
 }
 
-.white{
-    color : "white" !important
+.test{
+    background-color: #7d7d7d;
+    color: #e941ff;
 }

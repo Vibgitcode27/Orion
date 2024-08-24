@@ -28,6 +28,8 @@ export default function GenSeed() {
   const genMnemonic = () => {
     const newMnemonic = generateMnemonic();
     setMnemonic(newMnemonic);
+    const seed = mnemonicToSeedSync(mnemonic);
+    dispatch(setSeed(seed));
     setWallets([]);
     // generateWallets(newMnemonic);
   };
@@ -138,30 +140,30 @@ export default function GenSeed() {
     <div style={{marginTop : "-900px"}}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={{ color : "white" , marginTop : "50px" , fontSize : "80px"}}>Generate Seed and Wallets</h1>
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{ marginBottom : "60px"}}>
           <Col span={24}>
-            <Card style={{ width: 1300, margin: 'auto', padding: '20px', borderRadius: '10px', background: '#f5f5f5' }}>
-              <Title style={{ textAlign: 'center', marginBottom: '20px' , fontSize : "50px"}}>Your Seed Phrase</Title>
+            <Card style={{ width: 1300, margin: 'auto', padding: '20px', borderRadius: '10px', background: '#121322' , borderColor : "black" }}>
+              <Title style={{ textAlign: 'center', marginBottom: '20px' , fontSize : "50px" , color : "white"}}>Your Seed Phrase</Title>
               <Divider />
               <Row gutter={[16, 16]} justify="center" align="middle">
                 {mnemonic.split(" ").map((word, index) => (
                   <Col span={6} key={index}>
-                      <Card>
-                        <Text strong>{index + 1}. </Text>
-                        <Text>{word}</Text>
+                      <Card style={{ backgroundColor : "#000324" , border : "none"}}>
+                        <Text style={{ fontSize : "20px" , color : "white"}} strong>{index + 1}. </Text>
+                        <Text style={{ fontSize : "20px" , color : "white"}}>{word}</Text>
                       </Card>
                     </Col>
                 ))}
               </Row>
-              <h3 style={{ margin : "0px" ,  marginLeft : "10px" , marginTop : "20px"}}>Click here to copy <CopyOutlined/></h3>
+              <h3 style={{ margin : "0px" ,  marginLeft : "10px" , marginTop : "20px" , color : "white"}}>Click here to copy <CopyOutlined/></h3>
             </Card>
           </Col>
           <Col span={24}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '1300px', margin: '10px auto' , boxSizing : "border-box" }}>
-              <Button style={{ width : "600px" , padding : "30px 0px"}} onClick={genMnemonic}>
+              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "20px" , backgroundColor : "black" , color : "white" , borderRadius : "30px" }} onClick={genMnemonic}>
                 Generate New Seed
               </Button>
-              <Button style={{ width : "600px" , padding : "30px 0px"}} onClick={showModal}>
+              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "20px" ,  backgroundColor : "black" , color : "white" , borderRadius : "30px"}} onClick={showModal}>
                 New Wallets
               </Button>
             </div>
@@ -172,20 +174,28 @@ export default function GenSeed() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {wallets.map((wallet, index) => (
                 <Col key={index}>
-                  <Card style={{ width : "1300px" , marginBottom : "20px"}}>
-                    <h2>Wallet {index + 1}</h2>
+                  <Card bodyStyle={{ padding : "0px"}} style={{ width : "1300px" , marginBottom : "20px" , backgroundColor : "#121322" , border : "2px solid yellow"}}>
+                    <Title style={{ fontSize : "40px" , color : "white" }}>Wallet {index + 1}</Title>
                     { wallet.solanaPublicKey !== "" && (
-                      <>
-                        <p><strong>Solana Public Key:</strong> {wallet.solanaPublicKey}</p>
-                        <p><strong>Solana Secret Key (Hex):</strong> {wallet.solanaSecretKey}</p>
-                      </>
+                      <Card style={{ backgroundColor : "#000324" , marginBottom : "0px 0px" , padding : "0px 0px" , width : "100%" , border : "none" ,  borderTopLeftRadius : "60px" , borderTopRightRadius : "60px"  }}>
+                        <p style={{ fontSize : "40px" , color : "white"}}>Solana Public Key:</p>
+                        <p style={{ color : "white" , fontSize : "20px"}}> {wallet.solanaPublicKey}</p>
+                        <p style={{ fontSize : "40px" , color : "white"}}>Solana Secret Key (Hex):</p>
+                        <p style={{ color : "white" , fontSize : "18px"}}> {wallet.solanaSecretKey}</p>
+                      </Card>
 
                     )}
                     {wallet.ethereumAddress !== "" && (
-                      <>
-                        <p><strong>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
-                        <p><strong>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p>
-                      </>
+                      <Card style={{ backgroundColor : "#000324" , marginBottom : "0px 0px" , padding : "0px 0px" , width : "100%" , border : "none" , borderTopLeftRadius : "60px" , borderTopRightRadius : "60px" }}>
+                        <p style={{ fontSize : "40px" , color : "white" , padding : "0px 0px"}}>Ethereum Address:</p>
+                        <p style={{ color : "white" , fontSize : "20px" , marginTop : "-30px" , textAlign : "inherit"}}> {wallet.ethereumAddress}</p>
+                        <p style={{ fontSize : "40px" , color : "white" , padding : "0px 0px"}}>Ethereum Private Key:</p>
+                        <p style={{ color : "white" , fontSize : "20px" , marginTop : "-30px" , textAlign : "inherit"}}> {wallet.ethereumPrivateKey}</p>
+                        
+                        
+                        {/* <p style={{ color : "white" , fontSize : "20px"}}><strong style={{ fontSize : "40px"}}>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
+                        <p style={{ color : "white" , fontSize : "20px"}}><strong style={{ fontSize : "40px"}}>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p> */}
+                      </Card>
                     )}
                   </Card>
                 </Col>
