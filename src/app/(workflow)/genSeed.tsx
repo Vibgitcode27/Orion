@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
-import { Row, Col, Button, Flex , Card , Typography , Divider} from "antd";
+import { Row, Col, Button, Flex , Card , Typography , Divider , Modal , message, Avatar} from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { Keypair } from "@solana/web3.js";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -59,13 +59,81 @@ export default function GenSeed() {
     setWallets(generatedWallets);
   };
 
+  const generateSolanaWallet = (seed: Buffer, index: number) => {
+    const solanaPath = `m/44'/501'/${index}'/0'`;
+    const { key: solanaPrivateKey } = derivePath(solanaPath, seed.toString('hex'));
+    const solanaKeypair = Keypair.fromSeed(Uint8Array.from(solanaPrivateKey));
+    return {
+      solanaPublicKey: solanaKeypair.publicKey.toBase58(),
+      solanaSecretKey: Buffer.from(solanaKeypair.secretKey).toString("hex"),
+    };
+  };
+
+  // Function to generate Ethereum wallet
+  const generateEthereumWallet = (root: any, index: number) => {
+    const ethPath = `m/44'/60'/0'/0/${index}`;
+    const ethChild = root.derivePath(ethPath);
+    const ethPrivateKey = ethChild.privateKey ? ethers.hexlify(ethChild.privateKey) : "";
+    const ethWallet = new ethers.Wallet(ethPrivateKey);
+    return {
+      ethereumAddress: ethWallet.address,
+      ethereumPrivateKey: ethPrivateKey,
+    };
+  };
+
   useEffect(() => {
     genMnemonic();
   }, []);
 
+
+  // MODAL 
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const showModal = () => {
+    setIsVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsVisible(false);
+  };
+
+  const createEthereumWallet = () => {
+    const newMnemonic = generateMnemonic();
+    const seed = mnemonicToSeedSync(newMnemonic);
+    const root = bip32.fromSeed(seed);
+    const ethWallet = generateEthereumWallet(root, 0); // Generate a single wallet
+
+    setWallets(prevWallets => [...prevWallets, {
+    solanaPublicKey: '',
+    solanaSecretKey: '',
+    ethereumAddress: ethWallet.ethereumAddress,
+    ethereumPrivateKey: ethWallet.ethereumPrivateKey
+  }]);
+
+    message.success(`Ethereum Wallet Created!\nAddress: ${ethWallet.ethereumAddress}\nPrivate Key: ${ethWallet.ethereumPrivateKey}`);
+    handleCancel();
+  };
+
+  const createSolanaWallet = () => {
+    const newMnemonic = generateMnemonic();
+    const seed = mnemonicToSeedSync(newMnemonic);
+    const solanaWallet = generateSolanaWallet(seed, 0); // Generate a single wallet
+
+    setWallets(prevWallets => [...prevWallets, {
+      solanaPublicKey: solanaWallet.solanaPublicKey,
+      solanaSecretKey: solanaWallet.solanaSecretKey,
+      ethereumAddress: '',
+      ethereumPrivateKey: ''
+    }]);
+
+    message.success(`Solana Wallet Created!\nPublic Key: ${solanaWallet.solanaPublicKey}\nSecret Key (Hex): ${solanaWallet.solanaSecretKey}`);
+    handleCancel();
+  };
+
   return (
     <div style={{marginTop : "-900px"}}>
-      <Flex vertical align="center" justify="content">
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h1 style={{ color : "white" , marginTop : "50px" , fontSize : "80px"}}>Generate Seed and Wallets</h1>
         <Row gutter={[16, 16]}>
           <Col span={24}>
@@ -73,7 +141,7 @@ export default function GenSeed() {
               <Title style={{ textAlign: 'center', marginBottom: '20px' , fontSize : "50px"}}>Your Seed Phrase</Title>
               <Divider />
               <Row gutter={[16, 16]} justify="center" align="middle">
-                {seedWords.map((word, index) => (
+                {mnemonic.split(" ").map((word, index) => (
                   <Col span={6} key={index}>
                       <Card>
                         <Text strong>{index + 1}. </Text>
@@ -82,7 +150,7 @@ export default function GenSeed() {
                     </Col>
                 ))}
               </Row>
-              <h3 style={{ margin : "0px" ,  marginLeft : "10px" , marginTop : "20px"}}>Click here to to copy <CopyOutlined/></h3>
+              <h3 style={{ margin : "0px" ,  marginLeft : "10px" , marginTop : "20px"}}>Click here to copy <CopyOutlined/></h3>
             </Card>
           </Col>
           <Col span={24}>
@@ -90,7 +158,7 @@ export default function GenSeed() {
               <Button style={{ width : "600px" , padding : "30px 0px"}} onClick={genMnemonic}>
                 Generate New Seed
               </Button>
-              <Button style={{ width : "600px" , padding : "30px 0px"}} onClick={genMnemonic}>
+              <Button style={{ width : "600px" , padding : "30px 0px"}} onClick={showModal}>
                 New Wallets
               </Button>
             </div>
@@ -98,10 +166,10 @@ export default function GenSeed() {
         </Row>
           {wallets.length > 0 && (
             <Row>
-              <Flex vertical align="center" justify="center">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {wallets.map((wallet, index) => (
                 <Col key={index}>
-                  <Card style={{ width : "1300px" , }}>
+                  <Card style={{ width : "1300px" , marginBottom : "20px"}}>
                     <h2>Wallet {index + 1}</h2>
                     <p><strong>Solana Public Key:</strong> {wallet.solanaPublicKey}</p>
                     <p><strong>Solana Secret Key (Hex):</strong> {wallet.solanaSecretKey}</p>
@@ -110,11 +178,28 @@ export default function GenSeed() {
                   </Card>
                 </Col>
               ))}
-              </Flex>
+              </div>
             </Row>
           )}
         <p style={{color : "white"}}><strong>Redux Seed (Hex):</strong> {reduxSeed?.toString("hex")}</p>
-      </Flex>
+      </div>
+
+      <Modal
+        title={<Title level={4}>Create Wallet</Title>}
+        visible={isVisible}
+        onCancel={handleCancel}
+        footer={null}
+        centered
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <Button type="primary" onClick={createEthereumWallet}>
+            <Avatar/>Create New Ethereum Wallet
+          </Button>
+          <Button type="primary" onClick={createSolanaWallet}>
+            <Avatar/>Create New Solana Wallet
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
