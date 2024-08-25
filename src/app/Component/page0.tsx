@@ -5,9 +5,12 @@ import { createPageIterator , importPageIterator } from "@/lib/features/pages/pa
 import { Button, Flex, Image, Space } from "antd";
 import heroImg from "../assets/Clipped_image_20240822_061749.png";
 import "../styles/home.css"
+import { useRouter } from "next/navigation";
 
 export default function Page0(){
   const dispatch = useAppDispatch();
+  const router = useRouter();
+
 
   return(
         <>
@@ -38,7 +41,7 @@ export default function Page0(){
               ensuring reliable storage, management, and protection.
             </p>
             <Space style={{ marginTop : "40px"}}>
-              <Button onClick={() => { dispatch(createPageIterator({ createPage : 1})) }}  className="nav-btn" style={{ backgroundColor : "white" , color : "black" ,  fontSize : "18px" , width : "220px" , fontWeight : "bolder"}}>Create a new Wallet</Button>
+              <Button onClick={() => { router.push("/generateSeed")  }}  className="nav-btn" style={{ backgroundColor : "white" , color : "black" ,  fontSize : "18px" , width : "220px" , fontWeight : "bolder"}}>Create a new Wallet</Button>
               <Button  className="nav-btn" style={{ borderColor : "orangered" , color : "orangered" , fontSize : "18px" , width : "180px"}}>Import Wallet</Button>
             </Space>
           </Flex>

@@ -93,14 +93,14 @@ export default function GenSeed() {
 
   // MODAL 
 
-  const [isVisible, setIsVisible] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   const showModal = () => {
-    setIsVisible(true);
+    setIsModalOpen(true);
   };
 
   const handleCancel = () => {
-    setIsVisible(false);
+    setIsModalOpen(false);
   };
 
   const createEthereumWallet = () => {
@@ -160,10 +160,10 @@ export default function GenSeed() {
           </Col>
           <Col span={24}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '1300px', margin: '10px auto' , boxSizing : "border-box" }}>
-              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "20px" , backgroundColor : "black" , color : "white" , borderRadius : "30px" }} onClick={genMnemonic}>
+              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "23px" , backgroundColor : "red" , color : "white" , borderRadius : "30px" , border : "black" }} onClick={genMnemonic}>
                 Generate New Seed
               </Button>
-              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "20px" ,  backgroundColor : "black" , color : "white" , borderRadius : "30px"}} onClick={showModal}>
+              <Button style={{ width : "600px" , padding : "30px 0px" , fontSize : "23px" ,  backgroundColor : "white" , color : "black" , borderRadius : "30px"}} onClick={showModal}>
                 New Wallets
               </Button>
             </div>
@@ -174,10 +174,10 @@ export default function GenSeed() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {wallets.map((wallet, index) => (
                 <Col key={index}>
-                  <Card bodyStyle={{ padding : "0px"}} style={{ width : "1300px" , marginBottom : "20px" , backgroundColor : "#121322" , border : "2px solid yellow"}}>
+                  <Card bodyStyle={{ padding : "0px"}} style={{ width : "1300px" , marginBottom : "20px" , backgroundColor : "#121322" , border : "2px solid black"}}>
                     <Title style={{ fontSize : "40px" , color : "white" }}>Wallet {index + 1}</Title>
                     { wallet.solanaPublicKey !== "" && (
-                      <Card style={{ backgroundColor : "#000324" , marginBottom : "0px 0px" , padding : "0px 0px" , width : "100%" , border : "none" ,  borderTopLeftRadius : "60px" , borderTopRightRadius : "60px"  }}>
+                      <Card style={{ backgroundColor : "#9300b0" , marginBottom : "0px 0px" , padding : "0px 0px" , width : "100%" , border : "none" ,  borderTopLeftRadius : "60px" , borderTopRightRadius : "60px"  }}>
                         <p style={{ fontSize : "40px" , color : "white"}}>Solana Public Key:</p>
                         <p style={{ color : "white" , fontSize : "20px"}}> {wallet.solanaPublicKey}</p>
                         <p style={{ fontSize : "40px" , color : "white"}}>Solana Secret Key (Hex):</p>
@@ -206,14 +206,17 @@ export default function GenSeed() {
         <p style={{color : "white"}}><strong>Redux Seed (Hex):</strong> {reduxSeed?.toString("hex")}</p>
       </div>
 
-      <Modal
-        title={<Title level={4}>Create Wallet</Title>}
+      {/* <Modal
+        // title={<Title level={4}>Create Wallet</Title>}
         visible={isVisible}
         onCancel={handleCancel}
         footer={null}
         centered
+        bodyStyle={{ padding: 0 }}
+        style={{ backgroundColor: 'black', padding: 0, margin: 0,  alignItems: 'center' , border : "2px solid red" }}
+        width="auto"
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#121322', color: 'white' }}>
           <Button type="primary" onClick={createEthereumWallet}>
             <Avatar src={eth.src}/>Create New Ethereum Wallet
           </Button>
@@ -221,6 +224,40 @@ export default function GenSeed() {
             <Avatar src={sol.src}/>Create New Solana Wallet
           </Button>
         </div>
+      </Modal> */}
+
+      <Modal 
+        title={<Title style={{ backgroundColor: "#121322", color: "white", padding: "20px"  }} level={1}>Create Wallet</Title>}
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        bodyStyle={{ padding: 0, margin: 0, backgroundColor: 'transparent' }}
+        style={{ padding: 0, margin: 0 , borderRadius : "40px" }}
+        centered
+        className="modal"
+        closeIcon={null}
+        maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}
+      >
+        <Flex 
+          vertical 
+          justify="center" 
+          align="center" 
+          gap={12} 
+          style={{ 
+            backgroundColor: '#121322', 
+            color: 'white', 
+            border: 'none',
+            padding: '30px',
+            borderRadius : "40px"
+          }}
+        >
+          <Button type="primary" className="modal-button" onClick={createEthereumWallet}>
+            <Avatar className="modal-avatar" style={{marginLeft : "20px"}} src={eth.src}/>Ethereum Wallet
+          </Button>
+          <Button type="primary" className="modal-button" onClick={createSolanaWallet}>
+            <Avatar className="modal-avatar" src={sol.src}/>Solana Wallet
+          </Button>
+        </Flex>
       </Modal>
     </div>
   );

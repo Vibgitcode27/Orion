@@ -25,6 +25,32 @@ body{
 }
 
 .test{
-    background-color: #7d7d7d;
+    background-color: #9300b0;
     color: #e941ff;
+}
+
+.modal {
+    background-color: #121322;
+    color: white;
+}
+
+.modal .ant-modal-content {
+    padding: 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+.modal .ant-modal-body {
+    padding: 0 !important;
+}
+
+.modal-button{
+    height: 50px;
+    background-color: #300066;
+    color: #bbbbbb;
+    width: 90%;
+    font-size: 22px;
+}
+.modal-button:hover {
+    background-color: #3d0082 !important;
 }
