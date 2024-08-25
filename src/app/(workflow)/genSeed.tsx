@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { Row, Col, Button, Flex , Card , Typography , Divider , Modal , message, Avatar} from "antd";
+import { incrementEthPathKey , incrementSolanaPathKey } from "@/lib/features/derivationPath/derivationPathSlice";
 import { CopyOutlined } from "@ant-design/icons";
 import { Keypair } from "@solana/web3.js";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -23,6 +24,8 @@ export default function GenSeed() {
   let seedWords = mnemonic.split(" ");
   const bip32 = BIP32Factory(ecc);
 
+  let solanaPathKey = useAppSelector(state => state.path.solanaPathKey);
+  let ethPathKey = useAppSelector(state => state.path.ethPathKey);
   const reduxSeed = useAppSelector(state => state.seed.value);
 
   const genMnemonic = () => {
@@ -34,38 +37,39 @@ export default function GenSeed() {
     // generateWallets(newMnemonic);
   };
 
-  // const generateWallets = (mnemonic: string) => {
-  //   const seed = mnemonicToSeedSync(mnemonic);
-  //   dispatch(setSeed(seed));  // Store the seed in Redux store
-  //   const root = bip32.fromSeed(seed);
-  //   const generatedWallets = [];
+  const generateWallets = (mnemonic: string) => {
+    const seed = mnemonicToSeedSync(mnemonic);
+    dispatch(setSeed(seed));
+    const root = bip32.fromSeed(seed);
+    const generatedWallets = [];
 
-  //   // Generate multiple wallets (let's say 5)
-  //   for (let i = 0; i < 5; i++) {
-  //     // Solana wallet derivation using ed25519-hd-key
-  //     const solanaPath = `m/44'/501'/${i}'/0'`;
-  //     const { key: solanaPrivateKey } = derivePath(solanaPath, seed.toString('hex'));
-  //     const solanaKeypair = Keypair.fromSeed(Uint8Array.from(solanaPrivateKey));
+    // Generate multiple wallets (let's say 5)
+    for (let i = 0; i < 5; i++) {
+      // Solana wallet derivation using ed25519-hd-key
+      const solanaPath = `m/44'/501'/${i}'/0'`;
+      const { key: solanaPrivateKey } = derivePath(solanaPath, seed.toString('hex'));
+      const solanaKeypair = Keypair.fromSeed(Uint8Array.from(solanaPrivateKey));
 
-  //     // Ethereum wallet derivation
-  //     const ethPath = `m/44'/60'/0'/0/${i}`;
-  //     const ethChild = root.derivePath(ethPath);
-  //     const ethPrivateKey = ethChild.privateKey ? ethers.hexlify(ethChild.privateKey) : "";
-  //     const ethWallet = new ethers.Wallet(ethPrivateKey);
+      // Ethereum wallet derivation
+      const ethPath = `m/44'/60'/0'/0/${i}`;
+      const ethChild = root.derivePath(ethPath);
+      const ethPrivateKey = ethChild.privateKey ? ethers.hexlify(ethChild.privateKey) : "";
+      const ethWallet = new ethers.Wallet(ethPrivateKey);
 
-  //     generatedWallets.push({
-  //       solanaPublicKey: solanaKeypair.publicKey.toBase58(),
-  //       solanaSecretKey: Buffer.from(solanaKeypair.secretKey).toString("hex"),
-  //       ethereumAddress: ethWallet.address,
-  //       ethereumPrivateKey: ethPrivateKey,
-  //     });
-  //   }
+      generatedWallets.push({
+        solanaPublicKey: solanaKeypair.publicKey.toBase58(),
+        solanaSecretKey: Buffer.from(solanaKeypair.secretKey).toString("hex"),
+        ethereumAddress: ethWallet.address,
+        ethereumPrivateKey: ethPrivateKey,
+      });
+    }
 
-  //   setWallets(generatedWallets);
-  // };
+    setWallets(generatedWallets);
+  };
 
   const generateSolanaWallet = (seed: Buffer, index: number) => {
     const solanaPath = `m/44'/501'/${index}'/0'`;
+    dispatch(incrementSolanaPathKey());
     const { key: solanaPrivateKey } = derivePath(solanaPath, seed.toString('hex'));
     const solanaKeypair = Keypair.fromSeed(Uint8Array.from(solanaPrivateKey));
     return {
@@ -78,6 +82,7 @@ export default function GenSeed() {
   const generateEthereumWallet = (root: any, index: number) => {
     const ethPath = `m/44'/60'/0'/0/${index}`;
     const ethChild = root.derivePath(ethPath);
+    dispatch(incrementEthPathKey());
     const ethPrivateKey = ethChild.privateKey ? ethers.hexlify(ethChild.privateKey) : "";
     const ethWallet = new ethers.Wallet(ethPrivateKey);
     return {
@@ -104,10 +109,9 @@ export default function GenSeed() {
   };
 
   const createEthereumWallet = () => {
-    const newMnemonic = generateMnemonic();
-    const seed = mnemonicToSeedSync(newMnemonic);
+    const seed = mnemonicToSeedSync(mnemonic);
     const root = bip32.fromSeed(seed);
-    const ethWallet = generateEthereumWallet(root, 0); // Generate a single wallet
+    const ethWallet = generateEthereumWallet(root, ethPathKey);
 
     setWallets(prevWallets => [...prevWallets, {
     solanaPublicKey: '',
@@ -121,9 +125,8 @@ export default function GenSeed() {
   };
 
   const createSolanaWallet = () => {
-    const newMnemonic = generateMnemonic();
-    const seed = mnemonicToSeedSync(newMnemonic);
-    const solanaWallet = generateSolanaWallet(seed, 0); // Generate a single wallet
+    const seed = mnemonicToSeedSync(mnemonic);
+    const solanaWallet = generateSolanaWallet(seed, solanaPathKey);
 
     setWallets(prevWallets => [...prevWallets, {
       solanaPublicKey: solanaWallet.solanaPublicKey,
@@ -187,14 +190,10 @@ export default function GenSeed() {
                     )}
                     {wallet.ethereumAddress !== "" && (
                       <Card style={{ backgroundColor : "#000324" , marginBottom : "0px 0px" , padding : "0px 0px" , width : "100%" , border : "none" , borderTopLeftRadius : "60px" , borderTopRightRadius : "60px" }}>
-                        <p style={{ fontSize : "40px" , color : "white" , padding : "0px 0px"}}>Ethereum Address:</p>
+                        <p style={{ fontSize : "40px" , color : "white" , padding : "0px 0px"}}>Ethereum Public Key:</p>
                         <p style={{ color : "white" , fontSize : "20px" , marginTop : "-30px" , textAlign : "inherit"}}> {wallet.ethereumAddress}</p>
                         <p style={{ fontSize : "40px" , color : "white" , padding : "0px 0px"}}>Ethereum Private Key:</p>
                         <p style={{ color : "white" , fontSize : "20px" , marginTop : "-30px" , textAlign : "inherit"}}> {wallet.ethereumPrivateKey}</p>
-                        
-                        
-                        {/* <p style={{ color : "white" , fontSize : "20px"}}><strong style={{ fontSize : "40px"}}>Ethereum Address:</strong> {wallet.ethereumAddress}</p>
-                        <p style={{ color : "white" , fontSize : "20px"}}><strong style={{ fontSize : "40px"}}>Ethereum Private Key:</strong> {wallet.ethereumPrivateKey}</p> */}
                       </Card>
                     )}
                   </Card>
@@ -205,26 +204,6 @@ export default function GenSeed() {
           )}
         <p style={{color : "white"}}><strong>Redux Seed (Hex):</strong> {reduxSeed?.toString("hex")}</p>
       </div>
-
-      {/* <Modal
-        // title={<Title level={4}>Create Wallet</Title>}
-        visible={isVisible}
-        onCancel={handleCancel}
-        footer={null}
-        centered
-        bodyStyle={{ padding: 0 }}
-        style={{ backgroundColor: 'black', padding: 0, margin: 0,  alignItems: 'center' , border : "2px solid red" }}
-        width="auto"
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: '#121322', color: 'white' }}>
-          <Button type="primary" onClick={createEthereumWallet}>
-            <Avatar src={eth.src}/>Create New Ethereum Wallet
-          </Button>
-          <Button type="primary" onClick={createSolanaWallet}>
-            <Avatar src={sol.src}/>Create New Solana Wallet
-          </Button>
-        </div>
-      </Modal> */}
 
       <Modal 
         title={<Title style={{ backgroundColor: "#121322", color: "white", padding: "20px"  }} level={1}>Create Wallet</Title>}
