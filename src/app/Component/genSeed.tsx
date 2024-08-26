@@ -219,7 +219,6 @@ export default function GenSeed() {
             </div>
           </Row>
         )}
-        <p style={{color : "white"}}><strong>Redux Seed (Hex):</strong> {ethPathKey} <strong>{solanaPathKey}</strong></p>
       </div>
 
       <Modal 

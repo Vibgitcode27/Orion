@@ -1,7 +1,5 @@
 "use client"
-import { useState } from "react";
 import { useAppDispatch , useAppSelector } from "../../lib/hooks";
-import { createPageIterator , importPageIterator } from "@/lib/features/pages/pageSlice";
 import { Button, Flex, Image, Space } from "antd";
 import heroImg from "../assets/Clipped_image_20240822_061749.png";
 import "../styles/home.css"

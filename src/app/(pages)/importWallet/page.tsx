@@ -1,10 +1,8 @@
 "use client"
-
-import { useState } from "react";
 import "../../styles/home.css";
 import Navbar from "@/app/Component/Navbar";
 import { BackgroundBeams } from "@/app/Component/heroBeams";
-import RecoverWallets from "@/app/(workflow)/recoverWallets";
+import RecoverWallets from "@/app/Component/recoverWallets";
 export default function GenerateSeed() {
   return (
     <>
