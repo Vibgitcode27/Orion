@@ -42,7 +42,7 @@ export default function Page0(){
             </p>
             <Space style={{ marginTop : "40px"}}>
               <Button onClick={() => { router.push("/generateSeed")  }}  className="nav-btn" style={{ backgroundColor : "white" , color : "black" ,  fontSize : "18px" , width : "220px" , fontWeight : "bolder"}}>Create a new Wallet</Button>
-              <Button  className="nav-btn" style={{ borderColor : "orangered" , color : "orangered" , fontSize : "18px" , width : "180px"}}>Import Wallet</Button>
+              <Button onClick={() => {router.push("/importWallet")}} className="nav-btn" style={{ borderColor : "orangered" , color : "orangered" , fontSize : "18px" , width : "180px"}}>Import Wallet</Button>
             </Space>
           </Flex>
 

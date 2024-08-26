@@ -72,10 +72,6 @@ export default function Home() {
         { createPage === 0 && (
           <Page0/>
         )}
-        { createPage === 1 && (
-          <GenSeed/>
-          // <RecoverWallets/>
-        )}
       </div>
     </>
   );
