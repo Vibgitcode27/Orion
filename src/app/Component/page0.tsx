@@ -1,5 +1,4 @@
 "use client"
-import { useAppDispatch , useAppSelector } from "../../lib/hooks";
 import { Button, Flex, Image, Space } from "antd";
 import heroImg from "../assets/Clipped_image_20240822_061749.png";
 import backgroundIamge from "../assets/e941ff (1).png"
