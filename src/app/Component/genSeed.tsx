@@ -9,6 +9,12 @@ import { ethers } from 'ethers';
 import { derivePath } from "ed25519-hd-key";
 import eth from "../assets/etherium.png";
 import sol from "../assets/solana-sol-icon.png";
+// import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { useAppDispatch } from "@/lib/hooks";
+import { setkeys } from "@/lib/features/keys/keySlice";
+// import { useAppDispatch , useAppSelector } from "@/lib/hooks";
+// import { setSolPrivateKey , setEthPrivateKey ,  setEthPublicKey ,  setSolPublicKey } from "@/lib/features/interact/keys";
 
 const { Text, Title } = Typography;
 const bip32 = BIP32Factory(ecc);
@@ -30,7 +36,8 @@ interface Account {
 export default function HDWalletWithAccounts() {
   const [mnemonic, setMnemonic] = useState<string>("");
   const [accounts, setAccounts] = useState<Account[]>([]);
-
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const generateAccount = (seed: Buffer, accountIndex: number): Account => {
     // Generate Ethereum wallet for this account
     // Standard path for Ethereum (same as MetaMask): m/44'/60'/0'/0/accountIndex
@@ -96,6 +103,31 @@ export default function HDWalletWithAccounts() {
     }
   }, []);
 
+  const handleCardClick = (account: Account) => {
+    console.log('Card clicked, dispatching actions with values:', {
+      ethPrivateKey: account.ethereumWallet.ethereumPrivateKey,
+      ethPublicKey: account.ethereumWallet.ethereumAddress,
+      solPrivateKey: account.solanaWallet.solanaSecretKey,
+      solPublicKey: account.solanaWallet.solanaPublicKey,
+    });
+
+    let epk = account.ethereumWallet.ethereumPrivateKey;
+    let esk = account.solanaWallet.solanaSecretKey;
+    let ead = account.ethereumWallet.ethereumAddress;
+    let spk = account.solanaWallet.solanaPublicKey;
+
+    let keys = {
+      ethPrivateKey: epk,
+      ethPublicKey: ead,
+      solPrivateKey: esk,
+      solPublicKey: spk,
+    };
+
+    dispatch(setkeys(keys));
+
+    router.push("/interact");
+  };
+
   return (
     <div style={{ marginTop: "-900px" }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -141,7 +173,8 @@ export default function HDWalletWithAccounts() {
 
         {/* Display Accounts */}
         {accounts.map((account) => (
-          <Card key={account.id} 
+          <Card key={account.id}
+                onClick={() => handleCardClick(account)}
                 style={{ width: 1300, marginBottom: "20px", backgroundColor: "#121322", border: "2px solid black" }}>
             <Title style={{ fontSize: "40px", color: "white", marginLeft: "30px" }}>{account.name}</Title>
             
