@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { mnemonicToSeedSync } from "bip39";
 import { Row, Col, Button, Flex, Card, Typography, Divider, Modal, message, Avatar, Input } from "antd";
 import { CaretRightFilled } from "@ant-design/icons";
-import { Keypair } from "@solana/web3.js";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setSeed } from "@/lib/features/seed/seedSlice";
+import { Keypair } from "@solana/web3.js"
+import { useAppDispatch } from "@/lib/hooks";
 import { BIP32Factory } from "bip32";
 import ecc from '@bitcoinerlab/secp256k1';
 import { ethers } from 'ethers';
@@ -80,7 +79,7 @@ export default function RecoverAccounts() {
     if (seedPhrase) {
       try {
         const seed = mnemonicToSeedSync(seedPhrase);
-        dispatch(setSeed(seed));
+        // dispatch(setSeed(seed));
         
         // Generate first account automatically
         const firstAccount = generateAccount(seed, 0);

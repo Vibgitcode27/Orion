@@ -51,6 +51,21 @@ body{
     width: 90%;
     font-size: 22px;
 }
+
 .modal-button:hover {
     background-color: #3d0082 !important;
+}
+
+.custom-dropdown {
+    background-color: #333;
+    border-radius: 8px;
+    color: white;
+}
+
+.custom-dropdown .ant-dropdown-menu-item {
+    color: white;
+}
+
+.custom-dropdown .ant-dropdown-menu-item:hover {
+    background-color: #555;
 }
