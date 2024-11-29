@@ -11,6 +11,8 @@ import { derivePath } from "ed25519-hd-key";
 import "../styles/home.css"
 import eth from "../assets/etherium.png"
 import sol from "../assets/solana-sol-icon.png"
+import { useRouter } from "next/navigation"
+import { setkeys } from "@/lib/features/keys/keySlice";
 
 const { Text, Title } = Typography;
 const bip32 = BIP32Factory(ecc);
@@ -28,12 +30,14 @@ interface Account {
   };
 }
 
+
 export default function RecoverAccounts() {
   const dispatch = useAppDispatch();
   const [mnemonic, setMnemonic] = useState<string>("");
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [seedPhrase, setSeedPhrase] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const storedMnemonic = localStorage.getItem('importMnemonic');
@@ -125,6 +129,31 @@ export default function RecoverAccounts() {
     message.success("Imported accounts cleared");
   };
 
+  const handleCardClick = (account: Account) => {
+    console.log('Card clicked, dispatching actions with values:', {
+      ethPrivateKey: account.ethereumWallet.privateKey,
+      ethPublicKey: account.ethereumWallet.address,
+      solPrivateKey: account.solanaWallet.secretKey,
+      solPublicKey: account.solanaWallet.publicKey,
+    });
+
+    let epk = account.ethereumWallet.privateKey;
+    let esk = account.solanaWallet.secretKey;
+    let ead = account.ethereumWallet.address;
+    let spk = account.solanaWallet.publicKey;
+
+    let keys = {
+      ethPrivateKey: epk,
+      ethPublicKey: ead,
+      solPrivateKey: esk,
+      solPublicKey: spk,
+    };
+
+    dispatch(setkeys(keys));
+
+    router.push("/interact");
+  };
+
   return (
     <div style={{marginTop: "-900px"}}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -187,6 +216,7 @@ export default function RecoverAccounts() {
         {accounts.map((account) => (
           <Card 
             key={account.id}
+            onClick={() => handleCardClick(account)}
             style={{ width: 1300, marginBottom: "20px", backgroundColor: "#121322", border: "2px solid black" }}
           >
             <Title style={{ fontSize: "40px", color: "white", marginLeft: "30px" }}>{account.name}</Title>
